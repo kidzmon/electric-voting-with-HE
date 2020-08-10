@@ -1,0 +1,29 @@
+{
+  "name": "he-voting",
+  "version": "1.0.0",
+  "description": "sample service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kidzmon/electric-voting-with-HE.git"
+  },
+  "keywords": [
+    "homomorphic",
+    "encryption",
+    "electric",
+    "voting"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kidzmon/electric-voting-with-HE/issues"
+  },
+  "homepage": "https://github.com/kidzmon/electric-voting-with-HE#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-seal": "^4.3.9"
+  }
+}
