@@ -1,6 +1,8 @@
 var express = require('express')
 var masterServer = express()
 var masterPort = 4000
+var fs = require('fs')
+var Mofrix
 
 var publickeyRouter = require('./routes/publickey')
 var resultRouter = require('./routes/voteresult')
@@ -12,7 +14,7 @@ var publicBase64Key,context,decryptor,encoder
 const candidate = [2,3,5,7,11,13]
 async function seal (){
   const { Seal }= require('node-seal')
-  const Morfix = await Seal()
+  Morfix = await Seal()
   const schemeType = Morfix.SchemeType.BFV
   const securityLevel = Morfix.SecurityLevel.tc128
   const polyModulusDegree = 4096
@@ -73,11 +75,14 @@ masterServer.get('/publickey',async (req,res)=>{
   </body>
   </html>`)
 });
-masterServer.post('/result',(req, res)=>{
-  const cipherresult = req.body(['result']);
-  const decryptedresult = decryptor.decrypt(cipherresult);
+masterServer.get('/result',(req, res)=>{
+  const cipherresult = fs.readFileSync("result.txt");
+  //const cipherresult = req.body(['result']);
+  const cipherResult = Morfix.CipherText()
+  cipherResult.load(context,cipherresult);
+  const decryptedresult = decryptor.decrypt(cipherResult);
   const decodedArray = encoder.decode(decryptedresult)
-  const resultval = decodedArray[0]
+  var resultval = decodedArray[0]
   var result = [];
   var b =2;
   while(b<=resultval){
