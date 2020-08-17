@@ -1,8 +1,10 @@
 var express = require('express')
+var fs = require('fs')
 var serviceServer = express()
 var servicePort = 3000
 var bodyParser = require('body-parser')
-var context,encoder,evaluator,publicBase64Key,Morfix,cipherResult;
+var context,encoder,evaluator,publicBase64Key,Morfix,cipherResult,encryptor;
+var init = true
 var result = Int32Array.from([1])
 const candidate = [2,3,5,7,11,13]
 async function seal (){
@@ -40,40 +42,61 @@ async function seal (){
     )
   }
   encoder = Morfix.BatchEncoder(context)
+  const publicFile=fs.readFileSync("pk.txt");
+  var publicBase64Key=publicFile.toString()
   const keyGenerator = Morfix.KeyGenerator(context)
-  const publicKey = keyGenerator.publicKey()
-  publicBase64Key = publicKey.save()
   evaluator = Morfix.Evaluator(context)
-  
-  if (result==Int32Array.from([1])){
+  const UploadPublicKey = Morfix.PublicKey()
+  UploadPublicKey.load(context,publicBase64Key)
+  encryptor = Morfix.Encryptor(context, UploadPublicKey)
+
+  if (init){
+    console.log('init')
     var plainResult = encoder.encode(result)
     cipherResult = encryptor.encrypt(plainResult)
-    const ciperTextBase64 = cipherResult.save()
-    console.log(cipherTextBase64);
+    init=false;
   }
 }
 var loginRouter = require('./routes/login');
 var joinRouter = require('./routes/join');
+var mainRouter = require('./routes/main');
 serviceServer.use(bodyParser.urlencoded({extended:true}));
 serviceServer.use(bodyParser.json());
 serviceServer.use('/login',loginRouter);
 serviceServer.use('/join',joinRouter);
+serviceServer.use('/main',mainRouter);
 serviceServer.set('view engine','ejs');
 serviceServer.get('/',(req, res)=>{
   res.send('Hello world!')
 })
+serviceServer.post('/upload',function(req,res){
+  fs.readFile(req.files.uploadFile.path, function(error,data){
+    var filePath = __dirname+"\\files\\"+req.files.uploadFile.name;
+    fs.writeFile(filePath, data, function(error){
+      if(error){
+        throw error;
+      } else{
+        res.redirect("back");
+      }
+    })
+  })
+})
+serviceServer.get('/vote',(req,res)=>{
+  res.render('vote');
+})
 //serviceServer.post('/vote',async (req,res)=>{
-serviceServer.get('/vote',async (req,res)=>{
+serviceServer.post('/vote',async (req,res)=>{
   await seal();
-  //var publicBase64key=req.body['publickey']
-  //var vote=candidate[req.body['vote']]
-  var vote = 2;
-  const UploadPublicKey = Morfix.PublicKey()
-  UploadPublicKey.load(context,publicBase64Key)
-  const encryptor = Morfix.Encryptor(context, UploadPublicKey)
+  var vote=candidate[req.body['vote']]
+  //var vote = 2;
+  console.log(vote)
   const plainText = encoder.encode(Int32Array.from([vote]))
+  console.log(plainText)
   const cipherText = encryptor.encrypt(plainText)
-  cipherResult = evaluator.multiply(cipherText,cipherResult)
+  console.log(cipherText)
+  console.log(cipherResult)
+  evaluator.multiply(cipherText,cipherResult,cipherResult)
+  console.log(cipherResult)
   const cipherTextBase64 = cipherResult.save()
   res.send(cipherTextBase64)
 })

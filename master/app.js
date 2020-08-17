@@ -55,7 +55,23 @@ async function seal (){
 
 masterServer.get('/publickey',async (req,res)=>{
   await seal()
-  res.send(`${publicBase64Key}<br><br>${candidate}`)
+  res.send(`
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Public Key</title>
+  </head>
+  <body>
+  <h1>Public Key</h1>
+  <form method="post">
+      <label>Public Key :</label><br>
+      <label>`+publicBase64Key+`</label>
+      <label>Candidate : </label><br>
+      <label>`+candidate+`</label>
+  </form>
+  </body>
+  </html>`)
 });
 masterServer.post('/result',(req, res)=>{
   const cipherresult = req.body(['result']);

@@ -17,8 +17,7 @@ router.post('/', function (req, res, next) {
     mysql_db.query('select * from test_user where id=\'' + userId + '\' and pw=\'' + userPw + '\'', function (err, rows, fields) {
         if (!err) {
             if (rows[0]!=undefined) {
-                res.send('id : ' + rows[0]['id'] + '<br>' +
-                    'pw : ' + rows[0]['pw']);
+                res.render('main');
             } else {
                 res.send('no data');
             }
