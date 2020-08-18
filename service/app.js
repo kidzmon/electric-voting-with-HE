@@ -64,6 +64,7 @@ async function seal (){
 var loginRouter = require('./routes/login');
 var joinRouter = require('./routes/join');
 var mainRouter = require('./routes/main');
+var resultRouter = require('./routes/result');
 
 serviceServer.use(bodyParser.urlencoded({extended:true}));
 serviceServer.use(bodyParser.json());
@@ -82,6 +83,7 @@ serviceServer.use(function(req,res,next){
 serviceServer.use('/login',loginRouter);
 serviceServer.use('/join',joinRouter);
 serviceServer.use('/main',mainRouter);
+serviceServer.use('/result',resultRouter);
 
 serviceServer.set('view engine','ejs');
 
@@ -94,17 +96,21 @@ serviceServer.get('/vote',(req,res)=>{
 })
 
 serviceServer.post('/vote',async (req,res)=>{
+  console.log("vote")
+  console.log(req.body);
   await seal();
   console.log("Encryption Start");
   var vote=candidate[req.body['vote']]
-  //var vote = 2;
   var plainText = encoder.encode(Int32Array.from([vote]))
   var cipherText = encryptor.encrypt(plainText)
   evaluator.multiply(cipherText,cipherResult,cipherResult)
   console.log("Encryption End");
   console.log("Ciphered Result : ");
   console.log(cipherResult.save());
-  res.send(cipherResult.save())
+  fs.writeFile('result.txt',cipherResult.save(),'utf8',function(err){
+    console.log('result.txt created');
+  })
+  res.render('main')
 })
 
 serviceServer.listen(servicePort,()=>{

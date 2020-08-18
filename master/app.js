@@ -87,6 +87,7 @@ masterServer.get('/result',(req, res)=>{
   cipherResult.load(context,cipherresult);
   const decryptedresult = decryptor.decrypt(cipherResult);
   const decodedArray = encoder.decode(decryptedresult)
+  console.log("Result Decryption Finished");
   var resultval = decodedArray[0]
   console.log("Decrypted Value : ")
   console.log(resultval)
@@ -101,10 +102,20 @@ masterServer.get('/result',(req, res)=>{
       b++;
     }
   }
-  console.log("Result : \n")
+  console.log("Result : ")
   console.log(result);
-  console.log("Result Decryption Finished");
-  res.send(result);
+  var count = [0,0,0];
+  for(var i=0;i<result.length;i++){
+    count[candidate.indexOf(result[i])]++;
+  }
+  console.log("Result count : ");
+  console.log(count)
+  for(var i=1;i<=count.length;i++){
+    console.log("candidate"+i+" : "+count[i-1]);
+  }
+  res.header("Access-Control-Allow-Origin","*");
+  res.header("Access-Control-Allow-Headers","X-Requested-With");
+  res.json({result:true, count:count});
 });
 
 masterServer.get('/',(req, res)=>{

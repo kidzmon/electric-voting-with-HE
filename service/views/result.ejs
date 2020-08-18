@@ -1,0 +1,72 @@
+<!--result.ejs-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('./partials/head') %>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+          $(document).ready(function(){
+             //$('#getMethod').click(function() {
+                 //Ajax GET Method TEST
+                $.ajax({
+                      url: 'http://localhost:4000/result',
+                      dataType: 'json',
+                      type: 'GET',
+                      data:{"result":true},
+                      success: function(result) {
+                          if (result.result) {
+                            $('#cand1').html(result.count[0]);
+                            $('#cand2').html(result.count[1]);
+                            $('#cand3').html(result.count[2]);
+                          }
+                     }
+                  });
+            //});
+         });
+      </script> 
+  </head>
+  <body>
+    <%- include('./partials/nav') %>
+
+    <div class="container mb-3">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb p-1 pl-2 pr-2">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/main">Main</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Result</li>
+        </ol>
+      </nav>
+
+        <div class="form-group">
+          <h2>Opinion Poll Results</h2>
+        </div>
+
+        <div class="form-group">
+          <h2>Contents</h2>
+          <form id="vote-form;" style= "font-size: x-large;">
+            <table border="0">
+              <th colspan="3" style="padding:10px">X people have thus far taken part in this poll.</th>
+              <tr>
+                <td style="padding:5px;">Candidate1 got:</td>
+                <td id="cand1">후보1값 득표수</td>
+                <td>votes</td>
+              </tr>
+              <tr>
+                <td style="padding:5px;">Candidate2 got:</td>
+                <td id="cand2">후보2값 득표수</td>
+                <td>votes</td>
+              </tr>
+              <tr>
+                <td style="padding:5px;">Candidate3 got:</td>
+                <td id="cand3">후보3값 득표수</td>
+                <td>votes</td>
+              </tr>
+            </table>
+          </div>
+        <div>
+          <a class="btn btn-primary" href="/main">Back</a>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
