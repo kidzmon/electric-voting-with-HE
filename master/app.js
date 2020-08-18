@@ -11,15 +11,15 @@ masterServer.use(bodyParser.urlencoded({extended:true}));
 masterServer.use(bodyParser.json());
 
 var publicBase64Key,context,decryptor,encoder
-const candidate = [2,3,5,7,11,13]
+const candidate = [2,3,5]
 async function seal (){
   const { Seal }= require('node-seal')
   Morfix = await Seal()
   const schemeType = Morfix.SchemeType.BFV
   const securityLevel = Morfix.SecurityLevel.tc128
-  const polyModulusDegree = 4096
-  const bitSizes = [36, 36, 37]
-  const bitSize = 20
+  const polyModulusDegree = 8192
+  const bitSizes = [43, 43, 44, 44, 44]
+  const bitSize = 17
 
   const parms = Morfix.EncryptionParameters(schemeType)
   // Set the PolyModulusDegree
@@ -83,11 +83,12 @@ masterServer.get('/result',(req, res)=>{
   const decryptedresult = decryptor.decrypt(cipherResult);
   const decodedArray = encoder.decode(decryptedresult)
   var resultval = decodedArray[0]
+  console.log(resultval)
   var result = [];
   var b =2;
   while(b<=resultval){
     if(resultval%b==0){
-      if(result[result.length-1]!=b){result.push(b);}
+      result.push(b);
       resultval = resultval / b;
     }
     else{
