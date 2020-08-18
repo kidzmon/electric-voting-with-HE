@@ -2,15 +2,13 @@ var express = require('express')
 var masterServer = express()
 var masterPort = 4000
 var fs = require('fs')
-var Mofrix
+var stamp = require('console-stamp')(console, 'yyyy/mm/dd HH:MM:ss.l');
 
-var publickeyRouter = require('./routes/publickey')
-var resultRouter = require('./routes/voteresult')
 var bodyParser = require('body-parser')
 masterServer.use(bodyParser.urlencoded({extended:true}));
 masterServer.use(bodyParser.json());
 
-var publicBase64Key,context,decryptor,encoder
+var publicBase64Key,context,decryptor,encoder,Morfix
 const candidate = [2,3,5]
 async function seal (){
   const { Seal }= require('node-seal')
@@ -56,7 +54,14 @@ async function seal (){
 }
 
 masterServer.get('/publickey',async (req,res)=>{
-  await seal()
+  console.log("Encryption Key generation Start");
+  await seal();
+  console.log("Encryptino Key generation Finished");
+  console.log("Candidate prime : ");
+  console.log(candidate);
+  console.log("PublicBase64Key : ");
+  console.log(publicBase64Key);
+
   res.send(`
   <!DOCTYPE html>
   <html lang="en">
@@ -76,13 +81,14 @@ masterServer.get('/publickey',async (req,res)=>{
   </html>`)
 });
 masterServer.get('/result',(req, res)=>{
+  console.log("Result Decryption Start")
   const cipherresult = fs.readFileSync("result.txt");
-  //const cipherresult = req.body(['result']);
   const cipherResult = Morfix.CipherText()
   cipherResult.load(context,cipherresult);
   const decryptedresult = decryptor.decrypt(cipherResult);
   const decodedArray = encoder.decode(decryptedresult)
   var resultval = decodedArray[0]
+  console.log("Decrypted Value : ")
   console.log(resultval)
   var result = [];
   var b =2;
@@ -95,7 +101,9 @@ masterServer.get('/result',(req, res)=>{
       b++;
     }
   }
+  console.log("Result : \n")
   console.log(result);
+  console.log("Result Decryption Finished");
   res.send(result);
 });
 

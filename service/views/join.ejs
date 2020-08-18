@@ -1,17 +1,73 @@
-<!--join.ejs-->
+<!-- new.ejs (회원가입) -->
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Join</title>
-</head>
-<body>
-<h1>join</h1>
-<form method="post">
-    <label>id :</label><input type="text" name="userId"><br>
-    <label>pw :</label><input type="password" name="userPw"><br>
-    <label>pw-re :</label><input type="password" name="userPwRe"><br>
-    <input type="submit">
-</form>
-</body>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <%- include('./partials/head.ejs') %>
+  </head>
+  <body>
+    <%- include('./partials/nav.ejs') %>
+    <div class="container mb-3">
+      <h3 class="contentBoxTop mb-3">Create Account</h3>
+
+      <form action="/join" method="post">
+        <div class="form-group row">
+          <label for="username" class="col-sm-3 col-form-label"
+            >StudentID*</label
+          >
+          <div class="col-sm-9">
+            <input
+              type="text"
+              id="username"
+              name="userId"
+              class="form-control" 
+            />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="name" class="col-sm-3 col-form-label">Name*</label>
+          <div class="col-sm-9">
+            <input
+              type="text"
+              id="name"
+              name="name"
+              class="form-control"
+            />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="password" class="col-sm-3 col-form-label"
+            >Password*</label
+          >
+          <div class="col-sm-9">
+            <input
+              type="password"
+              id="password"
+              name="userPw"
+              class="form-control "
+            />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="passwordConfirmation" class="col-sm-3 col-form-label"
+            >Password Confirmation*</label
+          >
+          <div class="col-sm-9 col-sm-offset-3">
+            <input
+              type="password"
+              id="passwordConfirmation"
+              name="userPwRe"
+              class="form-control"
+            />
+          </div>
+        </div>
+        <p>
+          <small>*Required</small>
+        </p>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </body>
 </html>

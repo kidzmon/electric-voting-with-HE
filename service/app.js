@@ -1,4 +1,5 @@
 var express = require('express')
+var passport = require('passport')
 var fs = require('fs')
 var serviceServer = express()
 var servicePort = 3000
@@ -6,6 +7,8 @@ var bodyParser = require('body-parser')
 var context,encoder,evaluator,Morfix,cipherResult,encryptor;
 var init = true
 var result = Int32Array.from([1])
+var stamp = require('console-stamp')(console, 'yyyy/mm/dd HH:MM:ss.l');
+
 const candidate = [2,3,5]
 async function seal (){
   if(init){
@@ -64,6 +67,17 @@ var mainRouter = require('./routes/main');
 
 serviceServer.use(bodyParser.urlencoded({extended:true}));
 serviceServer.use(bodyParser.json());
+serviceServer.use(passport.initialize());
+serviceServer.use(function(req,res,next){
+  if(req.user){
+    res.locals.currentUser=req.user;
+    res.locals.isAuthenticated = true;
+  }
+  else{
+    res.locals.isAuthenticated=false;
+  }
+  next();
+})
 
 serviceServer.use('/login',loginRouter);
 serviceServer.use('/join',joinRouter);
@@ -72,7 +86,7 @@ serviceServer.use('/main',mainRouter);
 serviceServer.set('view engine','ejs');
 
 serviceServer.get('/',(req, res)=>{
-  res.send('Hello world!')
+  res.render('welcome');
 })
 
 serviceServer.get('/vote',(req,res)=>{
@@ -81,13 +95,15 @@ serviceServer.get('/vote',(req,res)=>{
 
 serviceServer.post('/vote',async (req,res)=>{
   await seal();
+  console.log("Encryption Start");
   var vote=candidate[req.body['vote']]
   //var vote = 2;
-  console.log(vote)
   var plainText = encoder.encode(Int32Array.from([vote]))
   var cipherText = encryptor.encrypt(plainText)
   evaluator.multiply(cipherText,cipherResult,cipherResult)
-  //cipherResult=evaluator.multiply(cipherText,cipherResult)
+  console.log("Encryption End");
+  console.log("Ciphered Result : ");
+  console.log(cipherResult.save());
   res.send(cipherResult.save())
 })
 
